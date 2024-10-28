@@ -2,7 +2,7 @@ import type { Query, Filter } from "./parseQuery";
 
 export type Row = Record<string, string | number | null | undefined>;
 
-const getPredicate = (filter: Filter) => {
+export const getPredicate = (filter: Filter) => {
 	switch (filter.operator) {
 		case "=":
 			return (row: Row) => row[filter.column] === filter.value;
@@ -23,6 +23,9 @@ const getPredicate = (filter: Filter) => {
 	}
 };
 
+export const project = (row: Row, projections: string[]) =>
+	Object.fromEntries(projections.map((p) => [p, row[p] ?? null]));
+
 export const executeParsedQuery = function* (
 	data: Iterable<Row>,
 	query: Query,
@@ -31,9 +34,7 @@ export const executeParsedQuery = function* (
 
 	for (const row of data) {
 		if (predicate(row)) {
-			yield Object.fromEntries(
-				query.projections.map((p) => [p, row[p] ?? null]),
-			);
+			yield project(row, query.projections);
 		}
 	}
 };
