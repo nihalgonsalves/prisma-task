@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: true
+  skip:
+    - merge
+    - rebase
+
+  commands:
+    eslint_biome:
+      glob: "*.{js,ts}"
+      run: node_modules/.bin/eslint --fix {staged_files} --no-warn-ignored && node_modules/.bin/biome check --write {staged_files}
+      stage_fixed: true
+    biome:
+      glob: "*.{json}"
+      run: node_modules/.bin/biome check --write {staged_files}
+      stage_fixed: true
