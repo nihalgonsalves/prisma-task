@@ -3,7 +3,7 @@ import { z } from "zod";
 type OperatorGreaterThan = ">";
 type OperatorEqual = "=";
 
-type Filter = { column: string } & (
+export type Filter = { column: string } & (
 	| {
 			operator: OperatorGreaterThan;
 			value: number;
@@ -14,7 +14,7 @@ type Filter = { column: string } & (
 	  }
 );
 
-type Query = {
+export type Query = {
 	projections: string[];
 	filter: Filter;
 };
