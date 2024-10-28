@@ -1,1 +1,7 @@
-{ "recommendations": ["biomejs.biome", "dbaeumer.vscode-eslint"] }
+{
+	"recommendations": [
+		"biomejs.biome",
+		"dbaeumer.vscode-eslint",
+		"mechatroner.rainbow-csv"
+	]
+}
