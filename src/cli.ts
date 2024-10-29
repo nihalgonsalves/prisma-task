@@ -7,6 +7,7 @@ import { parseQuery } from "./parseQuery";
 import { readCSV } from "./readCSV";
 import { promiseWithResolvers, withAsyncTiming, withTiming } from "./util";
 
+// #region Args
 const args = parseArgs({
 	options: {
 		path: {
@@ -24,18 +25,23 @@ const path = args.values.path;
 if (!path) {
 	throw new Error("Path is required");
 }
+// #endregion
 
+// #region: Read CSV
 const data: Row[] = [];
-await withAsyncTiming(`Loaded ${path}`, async () =>
-	readCSV(path, (row) => {
-		data.push(row);
-	}),
-);
-
-const abortController = new AbortController();
-process.on("SIGINT", () => {
-	abortController.abort();
-});
+try {
+	await withAsyncTiming(`Loaded ${path}`, async () =>
+		readCSV(path, (row) => {
+			data.push(row);
+		}),
+	);
+} catch (e) {
+	console.error(
+		`Failed to load CSV: ${e instanceof Error ? e.message : "Unknown error"}`,
+	);
+	process.exit(1);
+}
+// #endregion
 
 const processQuery = (query: string) => {
 	const parsedQuery = parseQuery(query);
@@ -49,6 +55,13 @@ const processQuery = (query: string) => {
 if (args.values.query) {
 	processQuery(args.values.query);
 } else {
+	// #region: REPL
+
+	const abortController = new AbortController();
+	process.on("SIGINT", () => {
+		abortController.abort();
+	});
+
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout,
@@ -76,4 +89,6 @@ if (args.values.query) {
 
 		await promise;
 	}
+
+	// #endregion
 }

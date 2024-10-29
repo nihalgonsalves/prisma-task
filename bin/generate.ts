@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import papa from "papaparse";
 
-import { range, getFileWriteStream } from "../src/util";
+import { range, getFileWriteStream, withTiming } from "../src/util";
 
 const ROW_COUNT = 100_000;
 const OUTPUT_FILE = new URL("../data/data.csv", import.meta.url);
@@ -41,12 +41,12 @@ using output = getFileWriteStream(OUTPUT_FILE, {
 	flags: "w",
 });
 
-// Write headers
-output.writeLn(papa.unparse([columns.map(({ name }) => name)]));
+withTiming(`Generated ${ROW_COUNT} rows`, () => {
+	// Write headers
+	output.writeLn(papa.unparse([columns.map(({ name }) => name)]));
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
-for (const _ of range(ROW_COUNT)) {
-	output.writeLn(papa.unparse([columns.map(({ generate }) => generate())]));
-}
-
-console.log("Done");
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
+	for (const _ of range(ROW_COUNT)) {
+		output.writeLn(papa.unparse([columns.map(({ generate }) => generate())]));
+	}
+});
