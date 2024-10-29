@@ -1,8 +1,8 @@
 {
 	"extends": "@nihalgonsalves/esconfig/tsconfig.shared.json",
 	"compilerOptions": {
-		"lib": ["esnext"],
-		"target": "esnext",
+		"lib": ["es2023"],
+		"target": "es2023",
 		"outDir": "./build/tsc",
 		"rootDir": "./",
 		"skipLibCheck": true
