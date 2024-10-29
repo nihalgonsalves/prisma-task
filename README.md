@@ -121,7 +121,8 @@ yarn lint
 
 5. What do you still need to do to make this code production ready?
 
-   - The CLI needs to be built into JS. It's currently run via `tsx`, which
-     transpiles on the fly for development
+   - The CLI needs to be packaged correctly. It's currently built as `cli.js`
+     file using esbuild, but only for a single version of node. The package
+     exports, CJS legacy build, etc are missing.
    - GitHub Actions already runs tests, but I'd add tests on all current and LTS
      versions of node (e.g. 18, 20, 22, 23).

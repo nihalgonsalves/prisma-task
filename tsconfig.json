@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"lib": ["esnext"],
 		"target": "esnext",
-		"outDir": "./build",
+		"outDir": "./build/tsc",
 		"rootDir": "./",
 		"skipLibCheck": true
 	},

@@ -72,7 +72,9 @@ const QueryMatchGroupSchema = z.discriminatedUnion("filterOperand", [
 export const parseQuery = (query: string): Query => {
 	const match = QueryRegEx.exec(query);
 	if (!match?.groups) {
-		throw new ParserError("Invalid query");
+		throw new ParserError(
+			"Could not parse query. Expected format: PROJECT col1[, col2] FILTER col1 > 5;",
+		);
 	}
 
 	const parsedGroups = QueryMatchGroupSchema.safeParse(match.groups);

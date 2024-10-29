@@ -35,25 +35,32 @@ try {
 			data.push(row);
 		}),
 	);
+	console.log(`Loaded ${data.length} rows`);
 } catch (e) {
 	console.error(
 		`Failed to load CSV: ${e instanceof Error ? e.message : "Unknown error"}`,
 	);
-	process.exit(1);
 }
 // #endregion
 
 const processQuery = (query: string) => {
-	const parsedQuery = parseQuery(query);
+	const parsedQuery = withTiming("Parsed query", () => parseQuery(query));
 
-	const results = [...executeParsedQuery(data, parsedQuery)];
+	const results = withTiming("Executed query", () => [
+		...executeParsedQuery(data, parsedQuery),
+	]);
 
 	console.table(results);
 	console.log(`Found ${results.length} matching rows`);
 };
 
 if (args.values.query) {
-	processQuery(args.values.query);
+	try {
+		processQuery(args.values.query);
+	} catch (e) {
+		console.log(e instanceof Error ? e.message : "Unknown error");
+		process.exit(1);
+	}
 } else {
 	// #region: REPL
 
@@ -72,11 +79,9 @@ if (args.values.query) {
 
 		rl.question("> ", abortController, (query) => {
 			try {
-				withTiming(`Executed query '${query}'`, () => {
-					processQuery(query);
-				});
+				processQuery(query);
 			} catch (e) {
-				console.error(e);
+				console.log(e instanceof Error ? e.message : "Unknown error");
 			}
 
 			resolve(undefined);

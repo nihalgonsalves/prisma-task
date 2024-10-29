@@ -8,9 +8,10 @@
 	"private": true,
 	"packageManager": "yarn@4.5.0+sha512.837566d24eec14ec0f5f1411adb544e892b3454255e61fdef8fd05f3429480102806bac7446bc9daff3896b01ae4b62d00096c7e989f1596f2af10b927532f39",
 	"scripts": {
-		"cli": "tsx ./src/cli.ts",
+		"cli": "node --enable-source-maps ./build/cli.js",
+		"cli:dev": "tsx ./src/cli.ts",
 		"gen": "tsx ./bin/generate.ts",
-		"build": "tsc",
+		"build": "tsc && esbuild --bundle --format=esm --platform=node --outfile=build/cli.js --minify --sourcemap=linked --target=node20 src/cli.ts",
 		"lint": "eslint",
 		"format": "biome check",
 		"test": "vitest"
@@ -21,6 +22,7 @@
 		"@nihalgonsalves/esconfig": "^0.10.12",
 		"@types/node": "^20",
 		"@types/papaparse": "^5",
+		"esbuild": "^0.24.0",
 		"eslint": "^9.13.0",
 		"lefthook": "^1.8.1",
 		"tsx": "^4.19.2",

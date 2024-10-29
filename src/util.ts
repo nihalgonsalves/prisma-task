@@ -45,10 +45,11 @@ export const promiseWithResolvers = <T>() => {
 	};
 };
 
-export const withTiming = (label: string, fn: () => void) => {
+export const withTiming = <T>(label: string, fn: () => T) => {
 	console.time(label);
-	fn();
+	const res = fn();
 	console.timeEnd(label);
+	return res;
 };
 
 export const withAsyncTiming = async (
