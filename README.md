@@ -17,6 +17,12 @@ yarn cli [--path=path/to/data.csv]
 # ...
 ```
 
+Or single query mode:
+
+```sh
+yarn cli --query='PROJECT name FILTER age = 99'
+```
+
 ## Setup
 
 ```sh
