@@ -3,7 +3,7 @@ import papa from "papaparse";
 
 import { range, getFileWriteStream } from "../src/util";
 
-const ROW_COUNT = 10_000;
+const ROW_COUNT = 100_000;
 const OUTPUT_FILE = new URL("../data/data.csv", import.meta.url);
 
 let id = 0;

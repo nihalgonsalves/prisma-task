@@ -5,7 +5,7 @@ import { parseArgs } from "node:util";
 import { executeParsedQuery, type Row } from "./executeParsedQuery";
 import { parseQuery } from "./parseQuery";
 import { readCSV } from "./readCSV";
-import { promiseWithResolvers } from "./util";
+import { promiseWithResolvers, withAsyncTiming, withTiming } from "./util";
 
 const args = parseArgs({
 	options: {
@@ -26,11 +26,11 @@ if (!path) {
 }
 
 const data: Row[] = [];
-await readCSV(path, (row) => {
-	data.push(row);
-});
-
-console.log(`Loaded ${data.length} rows from ${path}`);
+await withAsyncTiming(`Loaded ${path}`, async () =>
+	readCSV(path, (row) => {
+		data.push(row);
+	}),
+);
 
 const abortController = new AbortController();
 process.on("SIGINT", () => {
@@ -59,7 +59,9 @@ if (args.values.query) {
 
 		rl.question("> ", abortController, (query) => {
 			try {
-				processQuery(query);
+				withTiming(`Executed query '${query}'`, () => {
+					processQuery(query);
+				});
 			} catch (e) {
 				console.error(e);
 			}

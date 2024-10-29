@@ -44,3 +44,18 @@ export const promiseWithResolvers = <T>() => {
 		reject,
 	};
 };
+
+export const withTiming = (label: string, fn: () => void) => {
+	console.time(label);
+	fn();
+	console.timeEnd(label);
+};
+
+export const withAsyncTiming = async (
+	label: string,
+	fn: () => Promise<unknown>,
+) => {
+	console.time(label);
+	await fn();
+	console.timeEnd(label);
+};
