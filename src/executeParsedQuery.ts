@@ -2,12 +2,22 @@ import type { Query, Filter } from "./parseQuery";
 
 export type Row = Record<string, string | number | null | undefined>;
 
+const NUMERIC_OPERATOR = {
+	">": (a: number, b: number) => a > b,
+	"<": (a: number, b: number) => a < b,
+	">=": (a: number, b: number) => a >= b,
+	"<=": (a: number, b: number) => a <= b,
+};
+
 export const getPredicate = (filter: Filter) => {
 	switch (filter.operator) {
 		case "=":
 			return (row: Row) => row[filter.column] === filter.value;
 
 		case ">":
+		case "<":
+		case ">=":
+		case "<=":
 			return (row: Row) => {
 				const value = row[filter.column];
 
@@ -15,7 +25,7 @@ export const getPredicate = (filter: Filter) => {
 					return false;
 				}
 
-				return value > filter.value;
+				return NUMERIC_OPERATOR[filter.operator](value, filter.value);
 			};
 
 		default:

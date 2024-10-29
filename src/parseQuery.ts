@@ -1,11 +1,13 @@
 import { z } from "zod";
 
-type OperatorGreaterThan = ">";
+const OperatorNumericSchema = z.enum([">", "<", ">=", "<="]);
+type OperatorNumeric = z.infer<typeof OperatorNumericSchema>;
+
 type OperatorEqual = "=";
 
 export type Filter = { column: string } & (
 	| {
-			operator: OperatorGreaterThan;
+			operator: OperatorNumeric;
 			value: number;
 	  }
 	| {
@@ -30,7 +32,7 @@ export class ParserError extends Error {}
 // regex, keeping only the structure, and validating in the ZodSchema, giving
 // more granular errors
 const QueryRegEx =
-	/^PROJECT\s+(?<projections>[A-Za-z0-9\s,]*)\s+FILTER\s+(?<filterColumn>[A-Za-z0-9]*)\s*(?<filterOperand>>|=)\s*(?<filterValue>[0-9]+|"\w*");?$/i;
+	/^PROJECT\s+(?<projections>[A-Za-z0-9\s,]*)\s+FILTER\s+(?<filterColumn>[A-Za-z0-9]*)\s*(?<filterOperand>[><=]{1,2})\s*(?<filterValue>[0-9]+|"\w*");?$/i;
 
 const CommaSeparatedProjections = z
 	.string()
@@ -40,7 +42,7 @@ const QueryMatchGroupSchema = z.discriminatedUnion("filterOperand", [
 	z.object({
 		projections: CommaSeparatedProjections,
 		filterColumn: z.string(),
-		filterOperand: z.literal(">"),
+		filterOperand: OperatorNumericSchema,
 		filterValue: z.coerce.number().int(),
 	}),
 	z.object({
@@ -80,23 +82,25 @@ export const parseQuery = (query: string): Query => {
 
 	// required to satisfy TypeScript's discriminated union check
 
-	if (parsedGroups.data.filterOperand === ">") {
-		return {
-			projections: parsedGroups.data.projections,
-			filter: {
-				column: parsedGroups.data.filterColumn,
-				operator: parsedGroups.data.filterOperand,
-				value: parsedGroups.data.filterValue,
-			},
-		};
-	}
+	switch (parsedGroups.data.filterOperand) {
+		case "=":
+			return {
+				projections: parsedGroups.data.projections,
+				filter: {
+					column: parsedGroups.data.filterColumn,
+					operator: parsedGroups.data.filterOperand,
+					value: parsedGroups.data.filterValue,
+				},
+			};
 
-	return {
-		projections: parsedGroups.data.projections,
-		filter: {
-			column: parsedGroups.data.filterColumn,
-			operator: parsedGroups.data.filterOperand,
-			value: parsedGroups.data.filterValue,
-		},
-	};
+		default:
+			return {
+				projections: parsedGroups.data.projections,
+				filter: {
+					column: parsedGroups.data.filterColumn,
+					operator: parsedGroups.data.filterOperand,
+					value: parsedGroups.data.filterValue,
+				},
+			};
+	}
 };

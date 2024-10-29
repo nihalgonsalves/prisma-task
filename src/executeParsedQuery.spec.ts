@@ -36,6 +36,33 @@ describe("executeQuery", () => {
 		]).toEqual([{ name: "Bob" }, { name: "Charlie" }]);
 	});
 
+	it("filters by greater than equals", () => {
+		expect([
+			...executeParsedQuery(data, {
+				projections: ["name"],
+				filter: { column: "age", operator: ">=", value: 35 },
+			}),
+		]).toEqual([{ name: "Charlie" }]);
+	});
+
+	it("filters by less than", () => {
+		expect([
+			...executeParsedQuery(data, {
+				projections: ["name"],
+				filter: { column: "age", operator: "<", value: 30 },
+			}),
+		]).toEqual([{ name: "Alice" }]);
+	});
+
+	it("filters by less than equals", () => {
+		expect([
+			...executeParsedQuery(data, {
+				projections: ["name"],
+				filter: { column: "age", operator: "<=", value: 25 },
+			}),
+		]).toEqual([{ name: "Alice" }]);
+	});
+
 	// TODO: throw error instead? would have to pass in the column names
 	// separately from the data
 	it("returns null for invalid projections", () => {

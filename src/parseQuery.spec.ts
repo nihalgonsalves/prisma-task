@@ -16,31 +16,20 @@ describe("parseQuery", () => {
 		});
 	});
 
-	it("parses a query with a multiple projections and a numeric > filter", () => {
-		const query = "PROJECT col1, col2 FILTER col1 > 1";
+	for (const op of [">", "<", ">=", "<=", "="]) {
+		it(`parses a query with a multiple projections and a numeric ${op} filter`, () => {
+			const query = `PROJECT col1, col2 FILTER col1 ${op} 1`;
 
-		expect(parseQuery(query)).toEqual({
-			projections: ["col1", "col2"],
-			filter: {
-				column: "col1",
-				operator: ">",
-				value: 1,
-			},
+			expect(parseQuery(query)).toEqual({
+				projections: ["col1", "col2"],
+				filter: {
+					column: "col1",
+					operator: op,
+					value: 1,
+				},
+			});
 		});
-	});
-
-	it("parses a query with a multiple projections and a numeric = filter", () => {
-		const query = "PROJECT col1, col2 FILTER col1 = 1";
-
-		expect(parseQuery(query)).toEqual({
-			projections: ["col1", "col2"],
-			filter: {
-				column: "col1",
-				operator: "=",
-				value: 1,
-			},
-		});
-	});
+	}
 
 	it("parses a query with a multiple projections and a string = filter", () => {
 		const query = 'PROJECT col1, col2 FILTER col1 = "hello"';
