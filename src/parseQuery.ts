@@ -30,7 +30,7 @@ export class ParserError extends Error {}
 // regex, keeping only the structure, and validating in the ZodSchema, giving
 // more granular errors
 const QueryRegEx =
-	/^PROJECT\s+(?<projections>[A-Za-z0-9\s,]*)\s+FILTER\s+(?<filterColumn>[A-Za-z0-9]*)\s*(?<filterOperand>>|=)\s*(?<filterValue>[0-9]+|"\w*")$/i;
+	/^PROJECT\s+(?<projections>[A-Za-z0-9\s,]*)\s+FILTER\s+(?<filterColumn>[A-Za-z0-9]*)\s*(?<filterOperand>>|=)\s*(?<filterValue>[0-9]+|"\w*");?$/i;
 
 const CommaSeparatedProjections = z
 	.string()

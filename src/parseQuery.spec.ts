@@ -81,6 +81,19 @@ describe("parseQuery", () => {
 		});
 	});
 
+	it("parses a query with an ending semicolon", () => {
+		const query = "PROJECT col1, col2 FILTER col1 > 1;";
+
+		expect(parseQuery(query)).toEqual({
+			projections: ["col1", "col2"],
+			filter: {
+				column: "col1",
+				operator: ">",
+				value: 1,
+			},
+		});
+	});
+
 	it("throws a ParserError if the query is incomplete", () => {
 		const query = "PROJECT col1,col2 FILTER";
 
