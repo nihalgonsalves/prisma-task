@@ -5,6 +5,7 @@ import { parseArgs } from "node:util";
 import { executeParsedQuery, type Row } from "./executeParsedQuery";
 import { parseQuery } from "./parseQuery";
 import { readCSV } from "./readCSV";
+import { promiseWithResolvers } from "./util";
 
 const args = parseArgs({
 	options: {
@@ -54,7 +55,7 @@ if (args.values.query) {
 	});
 
 	while (!abortController.signal.aborted) {
-		const { promise, resolve } = Promise.withResolvers();
+		const { promise, resolve } = promiseWithResolvers();
 
 		rl.question("> ", abortController, (query) => {
 			try {

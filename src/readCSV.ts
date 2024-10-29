@@ -4,6 +4,7 @@ import papa from "papaparse";
 import { z } from "zod";
 
 import type { Row } from "./executeParsedQuery";
+import { promiseWithResolvers } from "./util";
 
 const CSVValueSchema = z.union([z.coerce.number().int(), z.string()]);
 
@@ -11,7 +12,7 @@ export const readCSV = async (
 	dataPath: PathLike,
 	onData: (row: Row) => void,
 ) => {
-	const { promise, resolve, reject } = Promise.withResolvers();
+	const { promise, resolve, reject } = promiseWithResolvers();
 	const readStream = createReadStream(dataPath, "utf8");
 
 	papa.parse<Row>(readStream, {

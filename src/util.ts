@@ -23,3 +23,24 @@ export const getFileWriteStream = (
 		},
 	};
 };
+
+// Note: Not needed in Node 22 (enters LTS on 29.10.2024), but copied here as
+// the task mentioned Node 20 support
+
+export const promiseWithResolvers = <T>() => {
+	let resolve: (value: T) => void;
+	let reject: (error: Error) => void;
+
+	const promise = new Promise<T>((res, rej) => {
+		resolve = res;
+		reject = rej;
+	});
+
+	return {
+		promise,
+		// @ts-expect-error use before defined
+		resolve,
+		// @ts-expect-error use before defined
+		reject,
+	};
+};
