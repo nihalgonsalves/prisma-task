@@ -1,11 +1,20 @@
 # prisma-task
 
-Usage:
+## Setup
 
 ```sh
+corepack enable
 yarn install
+```
+
+## Usage
+
+```sh
+yarn build
 yarn gen
-yarn cli [--path=path/to/data.csv]
+# enter a REPL
+yarn cli
+# optionally yarn cli [--path=data/data.csv]
 
 > PROJECT name FILTER age > 99;
 # │ 0       │ 'Fiona'      │
@@ -21,13 +30,6 @@ Or single query mode:
 
 ```sh
 yarn cli --query='PROJECT name FILTER age = 99'
-```
-
-## Setup
-
-```sh
-corepack enable
-yarn install
 ```
 
 ## Verification
@@ -63,17 +65,21 @@ yarn lint
 1. What were some of the tradeoffs you made when building this and why were
    these acceptable tradeoffs?
 
-   As mentioned above, I used a RegEx instead of defining a grammar and parsing
-   it into a syntax tree. It was much quicker to implement, but has some
-   disadvantages:
+   - As mentioned above, I used a RegEx instead of defining a grammar and
+     parsing it into a syntax tree. It was much quicker to implement and meets
+     the requirements of the task's query format, but has some disadvantages:
 
-   - It cannot support a more flexible query language - e.g. multiple filters,
-     skipping either the PROJECT or FILTER terms, adding more terms (WHERE,
-     ORDER, etc).
-   - Error messages cannot point to exactly what went wrong.
-   - Using Zod as a data validator is handy, but not the most performant way to
-     build a parsed query – but the performance of the parsing is not as
-     important relative to the filtering in this case.
+     - It cannot support a more flexible query language - e.g. multiple filters,
+       skipping either the PROJECT or FILTER terms, adding more terms (WHERE,
+       ORDER, etc).
+     - Error messages cannot point to exactly what went wrong.
+     - Using Zod as a data validator is handy, but not the most performant way to
+       build a parsed query – but the performance of the parsing is not as
+       important relative to the filtering in this case.
+
+   - I did not add support for non-alphanumeric column names. This would be
+     similar to the quoting for the string equality value (which is
+     implemented).
 
 2. Given more time, what improvements or optimizations would you want to add? When would you add them?
 
@@ -83,6 +89,8 @@ yarn lint
    - I'd explore using a library to create a better streaming interface (instead
      of callbacks)
    - I'd like to add more granular error messages in the query parsing
+   - I'd think about verifying column names against the columns in the CSV
+     header.
 
 3. What changes are needed to accommodate changes to:
 
