@@ -12,6 +12,9 @@ const args = parseArgs({
 			type: "string",
 			default: fileURLToPath(new URL("../data/data.csv", import.meta.url)),
 		},
+		query: {
+			type: "string",
+		},
 	},
 	args: process.argv.slice(2),
 });
@@ -22,7 +25,6 @@ if (!path) {
 }
 
 const data: Row[] = [];
-
 await readCSV(path, (row) => {
 	data.push(row);
 });
@@ -43,28 +45,32 @@ const processQuery = (query: string) => {
 	console.log(`Found ${results.length} matching rows`);
 };
 
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
-});
-
-while (!abortController.signal.aborted) {
-	const { promise, resolve } = Promise.withResolvers();
-
-	rl.question("> ", abortController, (query) => {
-		try {
-			processQuery(query);
-		} catch (e) {
-			console.error(e);
-		}
-
-		resolve(undefined);
+if (args.values.query) {
+	processQuery(args.values.query);
+} else {
+	const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
 	});
 
-	// prevent `unsettled top-level await` warning
-	abortController.signal.addEventListener("abort", () => {
-		resolve(undefined);
-	});
+	while (!abortController.signal.aborted) {
+		const { promise, resolve } = Promise.withResolvers();
 
-	await promise;
+		rl.question("> ", abortController, (query) => {
+			try {
+				processQuery(query);
+			} catch (e) {
+				console.error(e);
+			}
+
+			resolve(undefined);
+		});
+
+		// prevent `unsettled top-level await` warning
+		abortController.signal.addEventListener("abort", () => {
+			resolve(undefined);
+		});
+
+		await promise;
+	}
 }
