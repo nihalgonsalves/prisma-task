@@ -16,3 +16,5 @@ jobs:
       - run: yarn format
       - run: yarn lint
       - run: yarn test
+      # smoke test for the CLI
+      - run: ./bin/test.sh
